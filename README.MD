@@ -3,7 +3,7 @@
 ## Goal
 Routinely request a haiku from LLMs, write haiku data to file, commit changes to github, generate and host data on static site.
 
-## Setup
+## Dev Info, Setup and Commands
 Python version: `3.12.5` or so
 
 Virtual Environment: `venv` version `20.26.3`
@@ -19,9 +19,9 @@ Start virtual environment:
 On Windows: `venv\Scripts\activate`
 On Mac: `source venv/bin/activate`
 
-Dependency Requirements list: `requirements.txt`
+Install python dependencies while venv is active: `pip install -r requirements.txt`
 
-Create new requirements.txt: `pip freeze > requirements.txt`
+Create new requirements.txt after installing a new dependency: `pip freeze > requirements.txt`
 
 Environment variables can be stored in a local `.env` file. This uses `python-dotenv`
 
