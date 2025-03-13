@@ -5,7 +5,7 @@ from datetime import datetime
 
 data = {}
 # Reading from source
-with open("haiku_data.json", "r") as file:
+with open("test_haiku_data.json", "r") as file:
     print("Begin reading")
     data = json.load(file)
     print(data)
