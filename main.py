@@ -22,6 +22,6 @@ def get_gpt_haiku() -> list:
     completion_list = [line.rstrip() for line in completion_list]
     return completion_list
 
-print(get_gpthaiku())
+print(get_gpt_haiku())
 
 git_controller = GitController(REPO_PATH)
