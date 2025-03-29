@@ -4,6 +4,7 @@ from openai import OpenAI
 from git_controller import GitController
 from datetime import datetime
 import csv
+import anthropic
 
 class OutputCSVColumns:
     SOURCE = "source"
@@ -28,6 +29,7 @@ class OutputCSVColumns:
 # Setup dotenv
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 REPO_PATH = os.getenv("REPO_PATH")
 
 HAIKU_ROWS = []
@@ -45,12 +47,32 @@ def get_gpt_haiku() -> list:
     completion_list = completion.choices[0].message.content.split("\n")
     completion_list = [line.rstrip() for line in completion_list]
     return completion_list
+
 gpt_haiku = get_gpt_haiku()
 GPT_ROWS = {OutputCSVColumns.SOURCE: "GPT", OutputCSVColumns.DATE: datetime.now().isoformat(), OutputCSVColumns.LINE_1: gpt_haiku[0], OutputCSVColumns.LINE_2: gpt_haiku[1], OutputCSVColumns.LINE_3: gpt_haiku[2]}
 print(GPT_ROWS)
 
-HAIKU_ROWS.append(GPT_ROWS)
+def get_anthropic_haiku() -> list:
+    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
+    message = client.messages.create(
+        model = "claude-3-5-haiku-20241022",
+        max_tokens = 40,
+        system="Respond with ONLY a haiku - 3 lines with 5, 7, and 5 syllables. No introduction or extra text.",
+        messages=[
+            {"role": "user", "content": "Write a haiku"}
+        ]
+    )
+
+    message_list = message.content[0].text.split("\n")
+    return message_list
+
+anthropic_haiku = get_anthropic_haiku()
+ANTHROPIC_ROWS = {OutputCSVColumns.SOURCE: "Anthropic", OutputCSVColumns.DATE: datetime.now().isoformat(), OutputCSVColumns.LINE_1: anthropic_haiku[0], OutputCSVColumns.LINE_2: anthropic_haiku[1], OutputCSVColumns.LINE_3: anthropic_haiku[2]}
+print(ANTHROPIC_ROWS)
+
+HAIKU_ROWS.append(GPT_ROWS)
+HAIKU_ROWS.append(ANTHROPIC_ROWS)
 
 def save_csv_data(csv_file_path, fieldnames, rows, delimiter):
     datetime_now = datetime.now().isoformat()
