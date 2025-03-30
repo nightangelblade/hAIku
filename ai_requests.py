@@ -1,5 +1,6 @@
 from openai import OpenAI
 import anthropic
+import google.generativeai as genai
 import logging
 
 
@@ -30,3 +31,12 @@ def get_anthropic_haiku(ANTHROPIC_API_KEY: str) -> list:
 
     message_list = message.content[0].text.split("\n")
     return message_list
+
+def get_gemini_haiku(GEMINI_API_KEY: str) -> list:
+    genai.configure(api_key=GEMINI_API_KEY)
+
+    model = genai.GenerativeModel('gemini-2.0-flash-lite')
+    prompt = "Generate one haiku. Follow 5-7-5 syllable format."
+    response = model.generate_content(prompt)
+    response = response.text.rstrip()
+    return response.split("\n")
