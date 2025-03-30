@@ -1,5 +1,7 @@
 from openai import OpenAI
 import anthropic
+import logging
+
 
 def get_gpt_haiku(OPENAI_API_KEY: str) -> list:
     client = OpenAI(api_key=OPENAI_API_KEY)
