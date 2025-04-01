@@ -13,12 +13,13 @@ class OutputCSVColumns:
         """Return a list of all column names."""
         return [
             cls.SOURCE,
-	    cls.DATE,
+            cls.DATE,
             cls.LINE_1,
             cls.LINE_2,
             cls.LINE_3,
         ]
-    
+
+
 def save_csv_data(csv_file_path, fieldnames, rows, delimiter):
     with open(
         csv_file_path, "a", encoding="utf-8", newline=""
