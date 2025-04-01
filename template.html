@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hAIku | Recent</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 1em; }
+        .haiku { margin-bottom: 2em; }
+        .meta { color: gray; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>hAIku</h1>
+    <main>
+        {% for h in haikus %}
+            <div class="haiku">
+            <div class="meta">{{ h.source }} — {{ h.date }}</div>
+            <p>{{ h.line_1 }}</p>
+            <p>{{ h.line_2 }}</p>
+            <p>{{ h.line_3 }}</p>
+            </div>
+        {% endfor %}
+    </main>
+</body>
+</html>

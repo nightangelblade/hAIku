@@ -5,7 +5,7 @@ from git_controller import GitController
 from datetime import datetime
 from csv_lib import OutputCSVColumns, save_csv_data
 from ai_requests import get_gpt_haiku, get_anthropic_haiku, get_gemini_haiku
-
+from site_generator import SiteGenerator
 
 if __name__ == "__main__":
     # Setup logger
@@ -83,5 +83,9 @@ if __name__ == "__main__":
     HAIKU_ROWS.append(GEMINI_ROWS)
 
     save_csv_data("haikus.csv", OutputCSVColumns.all_columns(), HAIKU_ROWS, DELIMITER)
+
+    # generate static site
+    site_generator = SiteGenerator(haikus=HAIKU_ROWS)
+    site_generator.generate()
 
     # git_controller = GitController(REPO_PATH)
