@@ -28,3 +28,4 @@ Environment variables can be stored in a local `.env` file. This uses `python-do
 Variables needed:
 - OpenAI API Key as `OPENAI_API_KEY`
 - Anthropic API Key as `ANTHROPIC_API_KEY`
+- Gemini API Key as `GEMINI_API_KEY`
