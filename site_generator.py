@@ -4,7 +4,7 @@ from jinja2 import Environment, FileSystemLoader
 
 class SiteGenerator:
     def __init__(self, haikus: list):
-        env = Environment(loader=FileSystemLoader('.'))
+        self.env = Environment(loader=FileSystemLoader('.'))
         self.haikus = haikus
 
     def generate(self):

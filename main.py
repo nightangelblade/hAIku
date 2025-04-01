@@ -86,5 +86,6 @@ if __name__ == "__main__":
 
     # generate static site
     site_generator = SiteGenerator(haikus=HAIKU_ROWS)
+    site_generator.generate()
 
     # git_controller = GitController(REPO_PATH)
