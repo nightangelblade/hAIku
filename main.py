@@ -88,4 +88,6 @@ if __name__ == "__main__":
     site_generator = SiteGenerator(haikus=HAIKU_ROWS)
     site_generator.generate()
 
+    # Push to Github
     # git_controller = GitController(REPO_PATH)
+    # git_controller.auto_branch("auto_haiku_generate")
