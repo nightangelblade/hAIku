@@ -6,6 +6,7 @@ from datetime import datetime
 from csv_lib import OutputCSVColumns, save_csv_data
 from ai_requests import get_gpt_haiku, get_anthropic_haiku, get_gemini_haiku
 from site_generator import SiteGenerator
+from lib import is_directory, is_git_repo
 
 if __name__ == "__main__":
     # Setup logger
@@ -30,6 +31,20 @@ if __name__ == "__main__":
         if not var:
             logging.critical(f"Missing ENV VAR: '{idx}'")
             exit(1)  # Quit program
+
+    if not is_directory(REPO_PATH):
+        logging.critical(f"Path is not a directory: '{REPO_PATH}'")
+        exit(1)
+
+    if not is_git_repo(REPO_PATH):
+        logging.critical(f"Path is not a git repository: '{REPO_PATH}'")
+        exit(1)
+
+    # Preparations for git push
+    branch_name = "auto_haiku_generate" + datetime.now().strftime("%Y%m%d")
+    update_filenames = ["haikus.csv", "index.html"]
+    commit_message = "Automatic commit. Haikus generated and static webpage updated"
+    git_controller = GitController(REPO_PATH, "master", "origin")
 
     HAIKU_ROWS = []
     DELIMITER = "|"
@@ -89,5 +104,8 @@ if __name__ == "__main__":
     site_generator.generate()
 
     # Push to Github
-    # git_controller = GitController(REPO_PATH)
-    # git_controller.auto_branch("auto_haiku_generate")
+    try:
+        git_controller.auto_branch(branch_name, update_filenames, commit_message)
+    except Exception as e:
+        logging.error(f"{e}")
+        exit(1)
