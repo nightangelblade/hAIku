@@ -7,7 +7,7 @@ class GitController:
         self.main_branch_name = main_branch_name
         self.remote_name = remote_name
 
-    def add_files_and_commit_branch(self, update_files, commit_message):
+    def add_files_and_commit_branch(self, updated_files, commit_message):
         for updated_file in updated_files:
             self.repo.index.add(updated_file)
 

@@ -41,7 +41,7 @@ if __name__ == "__main__":
         exit(1)
 
     # Preparations for git push
-    branch_name = "auto_haiku_generate" + datetime.now().strftime("%Y%m%d")
+    branch_name = "auto_haiku_generate" + "_" + datetime.now().strftime("%Y%m%d%H%M%S")
     update_filenames = ["haikus.csv", "index.html"]
     commit_message = "Automatic commit. Haikus generated and static webpage updated"
     git_controller = GitController(REPO_PATH, "test_git_master", "origin")
