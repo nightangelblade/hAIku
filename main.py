@@ -44,7 +44,7 @@ if __name__ == "__main__":
     branch_name = "auto_haiku_generate" + "_" + datetime.now().strftime("%Y%m%d%H%M%S")
     update_filenames = ["haikus.csv", "index.html"]
     commit_message = "Automatic commit. Haikus generated and static webpage updated"
-    git_controller = GitController(REPO_PATH, "test_git_master", "origin")
+    git_controller = GitController(REPO_PATH, "master", "origin")
 
     HAIKU_ROWS = []
     DELIMITER = "|"
