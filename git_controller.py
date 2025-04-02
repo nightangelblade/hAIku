@@ -19,7 +19,7 @@ class GitController:
         self.repo.git.checkout("-b", branch_name)
 
     def push_branch(self, branch_name):
-        self.repo.git.push("origin", branch_name)
+        self.repo.git.push(self.remote_name, branch_name)
 
     def auto_branch(self, branch_name, filenames, commit_message):
         self.checkout_feature_branch(branch_name)
