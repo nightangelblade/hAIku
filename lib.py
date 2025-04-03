@@ -1,4 +1,3 @@
-import git
 import os
 
 
