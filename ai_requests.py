@@ -1,21 +1,49 @@
 from openai import OpenAI
 import anthropic
 import google.generativeai as genai
+from csv_lib import OutputCSVColumns
 import logging
+import json
 
 
 def get_gpt_haiku(OPENAI_API_KEY: str) -> list:
     client = OpenAI(api_key=OPENAI_API_KEY)
 
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
+    response = client.responses.create(
+        input=[
+            {
+                "role": "user",
+                "content": "write a haiku and give me three words that describe it",
+            }
+        ],
+        model="gpt-4o-mini-2024-07-18",
+        text={
+            "format": {
+                "type": "json_schema",
+                "name": "haiku_lines",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        OutputCSVColumns.LINE_1: {"type": "string"},
+                        OutputCSVColumns.LINE_2: {"type": "string"},
+                        OutputCSVColumns.LINE_3: {"type": "string"},
+                        "themes": {"type": "string"},
+                    },
+                    "required": [
+                        OutputCSVColumns.LINE_1,
+                        OutputCSVColumns.LINE_2,
+                        OutputCSVColumns.LINE_3,
+                        "themes",
+                    ],
+                    "additionalProperties": False,
+                },
+                "strict": True,
+            }
+        },
         store=True,
-        messages=[{"role": "user", "content": "write a haiku"}],
     )
-
-    completion_list = completion.choices[0].message.content.split("\n")
-    completion_list = [line.rstrip() for line in completion_list]
-    return completion_list
+    haiku_response = json.loads(response.output_text)
+    return haiku_response
 
 
 def get_anthropic_haiku(ANTHROPIC_API_KEY: str) -> list:
