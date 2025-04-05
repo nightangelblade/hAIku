@@ -99,6 +99,17 @@ if __name__ == "__main__":
 
     save_csv_data("haikus.csv", OutputCSVColumns.all_columns(), HAIKU_ROWS, DELIMITER)
 
+    # Format date time on haiku dates
+    for haiku in HAIKU_ROWS:
+        if haiku[OutputCSVColumns.DATE]:
+            try:
+                dt = datetime.fromisoformat(haiku[OutputCSVColumns.DATE])
+                formatted = dt.strftime("%B %d, %Y at %I:%M:%S %p")
+                haiku[OutputCSVColumns.DATE] = formatted
+            except ValueError:
+                logging.warning(f"Haiku date formatting failed for date: {haiku[OutputCSVColumns.DATE]}")
+
+
     # generate static site
     site_generator = SiteGenerator(haikus=HAIKU_ROWS)
     site_generator.generate()
