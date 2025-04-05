@@ -114,9 +114,9 @@ if __name__ == "__main__":
     site_generator = SiteGenerator(haikus=HAIKU_ROWS)
     site_generator.generate()
 
-    # # Push to Github
-    # try:
-    #     git_controller.auto_branch(branch_name, update_filenames, commit_message)
-    # except Exception as e:
-    #     logging.error(f"{e}")
-    #     exit(1)
+    # Push to Github
+    try:
+        git_controller.auto_branch(branch_name, update_filenames, commit_message)
+    except Exception as e:
+        logging.error(f"{e}")
+        exit(1)
