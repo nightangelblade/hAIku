@@ -1,7 +1,8 @@
 from openai import OpenAI
 import anthropic
-import google.generativeai as genai
+from google import genai
 from csv_lib import OutputCSVColumns
+from pydantic import create_model
 import logging
 import json
 
@@ -60,11 +61,25 @@ def get_anthropic_haiku(ANTHROPIC_API_KEY: str) -> list:
     return message_list
 
 
-def get_gemini_haiku(GEMINI_API_KEY: str) -> list:
-    genai.configure(api_key=GEMINI_API_KEY)
+def get_gemini_haiku(GEMINI_API_KEY: str):
+    Haiku = create_model(
+        'Haiku',
+        **{
+            OutputCSVColumns.LINE_1: (str, ...),
+            OutputCSVColumns.LINE_2: (str, ...),
+            OutputCSVColumns.LINE_3: (str, ...),
+            'themes': (str, ...),
+        }
+    )
 
-    model = genai.GenerativeModel("gemini-2.0-flash-lite")
-    prompt = "Generate one haiku. Follow 5-7-5 syllable format."
-    response = model.generate_content(prompt)
-    response = response.text.rstrip()
-    return response.split("\n")
+    client = genai.Client(api_key=GEMINI_API_KEY)
+    response = client.models.generate_content(
+        model='gemini-2.0-flash-lite',
+        contents='Generate one haiku. Follow 5-7-5 syllable format. Also generate three related theme words separated by a comma',
+        config={
+            'response_mime_type': 'application/json',
+            'response_schema': Haiku,
+        },
+    )
+
+    return json.loads(response.text)
