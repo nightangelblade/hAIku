@@ -1,19 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>hAIku | Recent</title>
     <style>
-        body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 1em; }
-        .haiku { margin-bottom: 2em; }
-        .meta { color: gray; font-size: 0.9em; }
-    </style>
-</head>
-<body>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          /* justify-content: center; */
+          background-color: rgb(37, 37, 37);
+          font-family: sans-serif;
+          color: azure;
+          line-height: 1.8;
+        }
+        a {
+            color: rgb(207, 255, 255);
+            cursor: pointer;
+        }
+        h1 {
+          margin-bottom: 40px;
+        }
+        .haiku {
+          margin-bottom: 40px;
+        }
+        .meta {
+          color: rgb(179, 179, 179);
+          font-family: monospace;
+        }
+        footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: auto;
+        font-family: monospace;
+      }
+      </style>
+  </head>
+  <body>
     <h1>hAIku</h1>
     <main>
-        
+      
             <div class="haiku">
             <div class="meta">GPT — April 08, 2025 at 01:19:20 PM</div>
             <p>Whispers in the breeze,</p>
@@ -34,7 +69,11 @@
             <p>Gentle breeze whispers tales</p>
             <p>Nature's sweet embrace</p>
             </div>
-        
+      
     </main>
-</body>
+    <footer>
+        <a href="https://github.com/nightangelblade/hAIku">Github Repository</a>
+        <small>Julian & Sean Software 2025</small>
+    </footer>
+  </body>
 </html>
