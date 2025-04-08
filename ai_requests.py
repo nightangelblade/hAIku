@@ -7,7 +7,7 @@ import logging
 import json
 
 
-def get_gpt_haiku(OPENAI_API_KEY: str) -> list:
+def get_gpt_haiku(OPENAI_API_KEY: str) -> dict:
     client = OpenAI(api_key=OPENAI_API_KEY)
 
     response = client.responses.create(
@@ -47,38 +47,74 @@ def get_gpt_haiku(OPENAI_API_KEY: str) -> list:
     return haiku_response
 
 
-def get_anthropic_haiku(ANTHROPIC_API_KEY: str) -> list:
+def get_anthropic_haiku(ANTHROPIC_API_KEY: str) -> dict:
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
-    message = client.messages.create(
+    haiku_response = client.messages.create(
         model="claude-3-5-haiku-20241022",
-        max_tokens=40,
-        system="Respond with ONLY a haiku - 3 lines with 5, 7, and 5 syllables. No introduction or extra text.",
-        messages=[{"role": "user", "content": "Write a haiku"}],
+        max_tokens=200,
+        system="You are a haiku generator that creates haikus and provides three theme words that describe each haiku. Always include both the haiku and its theme words.",
+        messages=[
+            {
+                "role": "user",
+                "content": "Write a haiku and provide three theme words that best describe it.",
+            }
+        ],
+        tools=[
+            {
+                "name": "get_haiku",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        OutputCSVColumns.LINE_1: {
+                            "type": "string",
+                            "description": "First line of the haiku (5 syllables)",
+                        },
+                        OutputCSVColumns.LINE_2: {
+                            "type": "string",
+                            "description": "Second line of the haiku (7 syllables)",
+                        },
+                        OutputCSVColumns.LINE_3: {
+                            "type": "string",
+                            "description": "Third line of the haiku (5 syllables)",
+                        },
+                        "themes": {
+                            "type": "string",
+                            "description": "IMPORTANT: Three descriptive theme words separated by commas.",
+                        },
+                    },
+                    "required": [
+                        OutputCSVColumns.LINE_1,
+                        OutputCSVColumns.LINE_2,
+                        OutputCSVColumns.LINE_3,
+                        "themes",
+                    ],
+                },
+            }
+        ],
+        tool_choice={"type": "tool", "name": "get_haiku"},
     )
-
-    message_list = message.content[0].text.split("\n")
-    return message_list
+    return haiku_response.content[0].input
 
 
-def get_gemini_haiku(GEMINI_API_KEY: str):
+def get_gemini_haiku(GEMINI_API_KEY: str) -> dict:
     Haiku = create_model(
-        'Haiku',
+        "Haiku",
         **{
             OutputCSVColumns.LINE_1: (str, ...),
             OutputCSVColumns.LINE_2: (str, ...),
             OutputCSVColumns.LINE_3: (str, ...),
-            'themes': (str, ...),
+            "themes": (str, ...),
         }
     )
 
     client = genai.Client(api_key=GEMINI_API_KEY)
     response = client.models.generate_content(
-        model='gemini-2.0-flash-lite',
-        contents='Generate one haiku. Follow 5-7-5 syllable format. Also generate three related theme words separated by a comma',
+        model="gemini-2.0-flash-lite",
+        contents="Generate one haiku. Follow 5-7-5 syllable format. Also generate three related theme words separated by a comma",
         config={
-            'response_mime_type': 'application/json',
-            'response_schema': Haiku,
+            "response_mime_type": "application/json",
+            "response_schema": Haiku,
         },
     )
 
