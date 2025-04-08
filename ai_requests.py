@@ -7,14 +7,14 @@ import logging
 import json
 
 
-def get_gpt_haiku(OPENAI_API_KEY: str) -> dict:
+def get_gpt_haiku(OPENAI_API_KEY: str, prompt: str) -> dict:
     client = OpenAI(api_key=OPENAI_API_KEY)
 
     response = client.responses.create(
         input=[
             {
                 "role": "user",
-                "content": "write a haiku and give me three words that describe it",
+                "content": prompt,
             }
         ],
         model="gpt-4o-mini-2024-07-18",
@@ -47,17 +47,17 @@ def get_gpt_haiku(OPENAI_API_KEY: str) -> dict:
     return haiku_response
 
 
-def get_anthropic_haiku(ANTHROPIC_API_KEY: str) -> dict:
+def get_anthropic_haiku(ANTHROPIC_API_KEY: str, prompt: str) -> dict:
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
     haiku_response = client.messages.create(
         model="claude-3-5-haiku-20241022",
-        max_tokens=200,
+        max_tokens=500,
         system="You are a haiku generator that creates haikus and provides three theme words that describe each haiku. Always include both the haiku and its theme words.",
         messages=[
             {
                 "role": "user",
-                "content": "Write a haiku and provide three theme words that best describe it.",
+                "content": prompt,
             }
         ],
         tools=[
@@ -97,7 +97,7 @@ def get_anthropic_haiku(ANTHROPIC_API_KEY: str) -> dict:
     return haiku_response.content[0].input
 
 
-def get_gemini_haiku(GEMINI_API_KEY: str) -> dict:
+def get_gemini_haiku(GEMINI_API_KEY: str, prompt: str) -> dict:
     Haiku = create_model(
         "Haiku",
         **{
@@ -111,7 +111,7 @@ def get_gemini_haiku(GEMINI_API_KEY: str) -> dict:
     client = genai.Client(api_key=GEMINI_API_KEY)
     response = client.models.generate_content(
         model="gemini-2.0-flash-lite",
-        contents="Generate one haiku. Follow 5-7-5 syllable format. Also generate three related theme words separated by a comma",
+        contents=prompt,
         config={
             "response_mime_type": "application/json",
             "response_schema": Haiku,
