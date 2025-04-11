@@ -29,3 +29,5 @@ Variables needed:
 - OpenAI API Key as `OPENAI_API_KEY`
 - Anthropic API Key as `ANTHROPIC_API_KEY`
 - Gemini API Key as `GEMINI_API_KEY`
+- Path to the local repo as `REPO_PATH`
+- Debug mode (so as not to run gitcontroller actions during testing) as `DEBUG_MODE` True or False; Defaults to True
