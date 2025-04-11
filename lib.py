@@ -1,6 +1,23 @@
 import os
 
 
+class ENVARS:
+    OPENAI_API_KEY: str
+    ANTHROPIC_API_KEY: str
+    GEMINI_API_KEY: str
+    REPO_PATH: str
+    DEBUG_MODE: str
+    
+    def get_list(self):
+        """Return a list of all column names."""
+        return [
+            self.OPENAI_API_KEY,
+            self.ANTHROPIC_API_KEY,
+            self.GEMINI_API_KEY,
+            self.REPO_PATH,
+            self.DEBUG_MODE,
+        ]
+    
 def is_directory(path):
     return os.path.isdir(path)
 
