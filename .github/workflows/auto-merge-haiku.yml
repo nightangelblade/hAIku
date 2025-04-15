@@ -1,0 +1,72 @@
+name: Auto Merge Haiku Generator PRs
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: 
+      - test-master
+
+jobs:
+  auto-merge-haiku-pr:
+    runs-on: ubuntu-latest
+    
+    # Only run this workflow for PRs from branches with the specified prefix
+    if: startsWith(github.head_ref, 'auto_haiku_generate')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Check changed files
+        id: changed-files
+        run: |
+          # Get list of changed files in the PR
+          CHANGED_FILES=$(git diff --name-only origin/master...HEAD | tr '\n' ' ')
+          echo "Changed files: $CHANGED_FILES"
+          
+          # Check if only the required files were changed
+          REQUIRED_FILES="haikus.csv haiku_themes.txt index.html"
+          
+          # Verify that only the required files are in the PR
+          ONLY_REQUIRED=true
+          for FILE in $CHANGED_FILES; do
+            if ! echo "$REQUIRED_FILES" | grep -q "$FILE"; then
+              ONLY_REQUIRED=false
+              echo "Found unexpected changed file: $FILE"
+              break
+            fi
+          done
+          
+          # Verify that all required files exist in the PR
+          ALL_REQUIRED=true
+          for FILE in $REQUIRED_FILES; do
+            if ! echo "$CHANGED_FILES" | grep -q "$FILE"; then
+              ALL_REQUIRED=false
+              echo "Missing required file: $FILE"
+              break
+            fi
+          done
+          
+          # Set output variable for next step
+          if [ "$ONLY_REQUIRED" = true ] && [ "$ALL_REQUIRED" = true ]; then
+            echo "valid_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "valid_changes=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Auto-merge PR
+        if: steps.changed-files.outputs.valid_changes == 'true'
+        run: |
+          # Install GitHub CLI
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh
+          
+          # Authenticate GitHub CLI using the GITHUB_TOKEN
+          echo "${{ github.token }}" | gh auth login --with-token
+          
+          # Merge the PR
+          gh pr merge ${{ github.event.pull_request.number }} --merge --delete-branch
