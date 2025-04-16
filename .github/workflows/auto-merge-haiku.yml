@@ -8,11 +8,10 @@ on:
 
 jobs:
   auto-merge-haiku-pr:
-    runs-on: ubuntu-latest
-    
     # Only run this workflow for PRs from branches with the specified prefix
     if: startsWith(github.head_ref, 'auto_haiku_generate')
-    
+
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
