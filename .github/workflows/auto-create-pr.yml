@@ -3,11 +3,10 @@ name: Auto Create PR for Haiku Generator Branches
 on:
   push:
     branches:
-      - '**'  # Match all branches
+      - 'auto_haiku_generate**'
 
 jobs:
   create-pull-request:
-    if: startsWith(github.ref, 'refs/heads/auto_haiku_generate')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
