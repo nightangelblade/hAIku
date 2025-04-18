@@ -3,7 +3,7 @@ name: Test Workflow
 on:
   push:
     branches:
-      - 'auto_haiku_generate**'
+      - 'auto_haiku_generate_20250418173040'
 
 jobs:
   testing-workflow:
