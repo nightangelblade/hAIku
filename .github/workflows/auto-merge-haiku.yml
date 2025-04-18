@@ -2,9 +2,10 @@ name: Auto Merge Haiku Generator PRs
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened]
     branches:
       - 'test-master'
+      - 'auto_haiku_generate**'
 
 jobs:
   auto-merge-haiku-pr:
