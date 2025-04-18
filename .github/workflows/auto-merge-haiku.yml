@@ -4,14 +4,14 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
     branches:
-      - '**'  # Match all target branches
+      - 'test-master'
 
 jobs:
   auto-merge-haiku-pr:
     runs-on: ubuntu-latest
 
     # Only run this workflow for PRs targeting test-master from branches with the specified prefix
-    if: github.base_ref == 'test-master' && startsWith(github.head_ref, 'auto_haiku_generate')
+    if: startsWith(github.head_ref, 'auto_haiku_generate')
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,7 +22,7 @@ jobs:
         id: changed-files
         run: |
           # Get list of changed files in the PR
-          CHANGED_FILES=$(git diff --name-only origin/master...HEAD | tr '\n' ' ')
+          CHANGED_FILES=$(git diff --name-only origin/test-master...HEAD | tr '\n' ' ')
           echo "Changed files: $CHANGED_FILES"
           
           # Check if only the required files were changed
