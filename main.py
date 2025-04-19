@@ -112,16 +112,6 @@ class HaikuGen:
 
 
 if __name__ == "__main__":
-    # Setup logger
-    logging.basicConfig(
-        level=logging.WARNING,  # Set log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        format="%(asctime)s - %(levelname)s - %(message)s",  # Log message format
-        handlers=[
-            logging.StreamHandler(),  # Print to console
-            logging.FileHandler("error.log"),  # Save to a file
-        ],
-    )
-
     load_dotenv()
         
     # Setup dotenv and retrieve env varas
@@ -132,6 +122,7 @@ if __name__ == "__main__":
     env_vars.REPO_PATH = os.getenv("REPO_PATH")
 
     DEBUG_MODE = os.getenv("DEBUG_MODE")
+
     if DEBUG_MODE == "True":
         DEBUG_MODE = True
     elif DEBUG_MODE == "False":
@@ -141,10 +132,25 @@ if __name__ == "__main__":
         DEBUG_MODE = True
     env_vars.DEBUG_MODE = DEBUG_MODE
 
+    if DEBUG_MODE:
+        log_lvl = logging.DEBUG
+    else:
+        log_lvl = logging.WARNING
+
+        # Setup logger
+    logging.basicConfig(
+        level=logging.WARNING,  # Set log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        format="%(asctime)s - %(levelname)s - %(message)s",  # Log message format
+        handlers=[
+            logging.StreamHandler(),  # Print to console
+            logging.FileHandler("error.log"),  # Save to a file
+        ],
+    )
+
     # Error checking env vars
     env_vars_list = env_vars.get_list()
     for idx, var in enumerate(env_vars_list):
-        if not var:
+        if var is None:
             logging.critical(f"Missing ENV VAR: '{idx}'")
             exit(1)  # Quit program
 
