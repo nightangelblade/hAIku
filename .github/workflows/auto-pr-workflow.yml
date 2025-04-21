@@ -1,0 +1,103 @@
+name: Auto Create and Merge PR for Haiku Generator Branches
+
+on:
+  push:
+    branches:
+      - 'auto_haiku_generate**'
+
+jobs:
+  process-haiku-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh
+          
+      - name: Authenticate GitHub CLI
+        run: echo "${{ github.token }}" | gh auth login --with-token
+
+      - name: Check files and create/merge PR
+        run: |
+          # Extract branch name
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "Processing branch: $BRANCH_NAME"
+          
+          # Get list of changed files compared to test-master
+          CHANGED_FILES=$(git diff --name-only origin/test-master...HEAD | tr '\n' ' ')
+          echo "Changed files: $CHANGED_FILES"
+          
+          # Check if only the required files were changed
+          REQUIRED_FILES="haikus.csv haiku_themes.txt index.html"
+          
+          # Verify that only the required files are in the changes
+          ONLY_REQUIRED=true
+          for FILE in $CHANGED_FILES; do
+            if ! echo "$REQUIRED_FILES" | grep -q "$FILE"; then
+              ONLY_REQUIRED=false
+              echo "Found unexpected changed file: $FILE"
+              break
+            fi
+          done
+
+          # Verify that all required files exist in the changes
+          ALL_REQUIRED=true
+          for FILE in $REQUIRED_FILES; do
+            if ! echo "$CHANGED_FILES" | grep -q "$FILE"; then
+              ALL_REQUIRED=false
+              echo "Missing required file: $FILE"
+              break
+            fi
+          done
+
+          # Check if PR already exists
+          PR_EXISTS=$(gh pr list --head $BRANCH_NAME --json number | grep -c '"number"' || true)
+          PR_NUMBER=""
+
+          if [ "$PR_EXISTS" -eq "0" ]; then
+            echo "Creating new pull request..."
+            # Create a PR with descriptive title and body
+            PR_RESPONSE=$(gh pr create \
+              --base test-master \
+              --head $BRANCH_NAME \
+              --title "Auto-generated Haiku Updates from $BRANCH_NAME" \
+              --body "This PR was automatically created from the $BRANCH_NAME branch.
+
+              It contains updates to the following files:
+              - haikus.csv
+              - haiku_themes.txt
+              - index.html
+
+              This PR will be automatically merged if it meets all requirements." \
+              --json number)
+
+            # Extract PR number from response
+            PR_NUMBER=$(echo "$PR_RESPONSE" | grep -o '"number": *[0-9]*' | grep -o '[0-9]*')
+            echo "Pull request #$PR_NUMBER created successfully."
+          else
+            # Get PR number for existing PR
+            PR_NUMBER=$(gh pr list --head $BRANCH_NAME --json number | grep -o '"number": *[0-9]*' | grep -o '[0-9]*')
+            echo "Pull request #$PR_NUMBER already exists for branch $BRANCH_NAME."
+          fi
+          
+          # Proceed with auto-merge if the files are valid
+          if [ "$ONLY_REQUIRED" = true ] && [ "$ALL_REQUIRED" = true ]; then
+            echo "All file requirements met. Auto-merging pull request #$PR_NUMBER..."
+            gh pr merge $PR_NUMBER --merge --delete-branch
+            echo "Pull request merged successfully!"
+          else
+            echo "File requirements not met. Pull request will remain open for review."
+            if [ "$ONLY_REQUIRED" = false ]; then
+              gh pr comment $PR_NUMBER --body "⚠️ This PR contains changes to files outside the allowed list. Please review manually."
+            fi
+            if [ "$ALL_REQUIRED" = false ]; then
+              gh pr comment $PR_NUMBER --body "⚠️ This PR is missing changes to one or more required files. Please update the PR to include all required files."
+            fi
+          fi
