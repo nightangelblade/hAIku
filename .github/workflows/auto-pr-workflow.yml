@@ -76,7 +76,7 @@ jobs:
           PR_NUMBER=$(echo "$PR_RESPONSE" | grep -o '"number": *[0-9]*' | grep -o '[0-9]*')
           echo "Pull request #$PR_NUMBER created successfully."
           
-	  gh pr merge $PR_NUMBER --merge --delete-branch
+          gh pr merge $PR_NUMBER --merge --delete-branch
 
           # Proceed with auto-merge if the files are valid
           # if [ "$ONLY_REQUIRED" = true ] && [ "$ALL_REQUIRED" = true ]; then
