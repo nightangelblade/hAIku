@@ -3,6 +3,9 @@ name: PR Test Workflow
 on:
   pull_request:
     types: [opened, reopened, synchronize]
+    branches:
+      - 'test-master'
+      - 'auto_haiku_generate**'
 
 jobs:
   test-pr-trigger:
