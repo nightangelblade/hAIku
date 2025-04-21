@@ -24,4 +24,5 @@ class GitController:
     def auto_branch(self, branch_name, filenames, commit_message):
         self.checkout_feature_branch(branch_name)
         self.add_files_and_commit_branch(filenames, commit_message)
-        self.push_branch(branch_name)
+        self.repo.git.merge(branch_name, self.main_branch_name)
+        self.push_branch(self.main_branch_name)
