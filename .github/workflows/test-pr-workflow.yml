@@ -1,0 +1,22 @@
+name: PR Test Workflow
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  test-pr-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR Information
+        run: |
+          echo "Pull Request #${{ github.event.pull_request.number }} triggered this workflow"
+          echo "PR title: ${{ github.event.pull_request.title }}"
+          echo "Source branch: ${{ github.head_ref }}"
+          echo "Target branch: ${{ github.base_ref }}"
+          echo "PR author: ${{ github.event.pull_request.user.login }}"
+          
+      - name: Simple Test
+        run: |
+          echo "This is a simple test to confirm PR triggers are working"
+          echo "Current time: $(date)"
