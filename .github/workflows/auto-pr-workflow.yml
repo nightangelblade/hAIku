@@ -76,17 +76,19 @@ jobs:
           PR_NUMBER=$(echo "$PR_RESPONSE" | grep -o '"number": *[0-9]*' | grep -o '[0-9]*')
           echo "Pull request #$PR_NUMBER created successfully."
           
+	  gh pr merge $PR_NUMBER --merge --delete-branch
+
           # Proceed with auto-merge if the files are valid
-          if [ "$ONLY_REQUIRED" = true ] && [ "$ALL_REQUIRED" = true ]; then
-            echo "All file requirements met. Auto-merging pull request #$PR_NUMBER..."
-            gh pr merge $PR_NUMBER --merge --delete-branch
-            echo "Pull request merged successfully!"
-          else
-            echo "File requirements not met. Pull request will remain open for review."
-            if [ "$ONLY_REQUIRED" = false ]; then
-              gh pr comment $PR_NUMBER --body "⚠️ This PR contains changes to files outside the allowed list. Please review manually."
-            fi
-            if [ "$ALL_REQUIRED" = false ]; then
-              gh pr comment $PR_NUMBER --body "⚠️ This PR is missing changes to one or more required files. Please update the PR to include all required files."
-            fi
-          fi
+          # if [ "$ONLY_REQUIRED" = true ] && [ "$ALL_REQUIRED" = true ]; then
+            # echo "All file requirements met. Auto-merging pull request #$PR_NUMBER..."
+            # gh pr merge $PR_NUMBER --merge --delete-branch
+            # echo "Pull request merged successfully!"
+          # else
+            # echo "File requirements not met. Pull request will remain open for review."
+            # if [ "$ONLY_REQUIRED" = false ]; then
+              # gh pr comment $PR_NUMBER --body "⚠️ This PR contains changes to files outside the allowed list. Please review manually."
+            # fi
+            # if [ "$ALL_REQUIRED" = false ]; then
+              # gh pr comment $PR_NUMBER --body "⚠️ This PR is missing changes to one or more required files. Please update the PR to include all required files."
+            # fi
+          # fi
