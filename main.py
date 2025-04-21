@@ -91,13 +91,13 @@ class HaikuGen:
 
     def github_auto_branching(self):
         # Preparations for git push
-        branch_name = "auto_haiku_generate" + "_" + datetime.now().strftime("%Y%m%d%H%M%S")
+        # branch_name = "auto_haiku_generate" + "_" + datetime.now().strftime("%Y%m%d%H%M%S")
         update_filenames = ["haikus.csv", "haiku_themes.txt", "index.html"]
         commit_message = "Automatic commit. Haikus generated and static webpage updated"
         git_controller = GitController(self.env_vars.REPO_PATH, "show", "origin")
         # Push to Github
         try:
-            git_controller.auto_branch(branch_name, update_filenames, commit_message)
+            git_controller.auto_branch(update_filenames, commit_message)
         except Exception as e:
             logging.error(f"{e}")
             exit(1)
