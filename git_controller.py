@@ -21,8 +21,8 @@ class GitController:
     def push_branch(self, branch_name):
         self.repo.git.push(self.remote_name, branch_name)
 
-    def auto_branch(self, branch_name, filenames, commit_message):
+    def auto_branch(self, filenames, commit_message):
         # self.checkout_feature_branch(branch_name)
         self.repo.git.checkout(self.main_branch_name)
         self.add_files_and_commit_branch(filenames, commit_message)
-        self.push_branch(branch_name)
+        self.push_branch(self.main_branch_name)
